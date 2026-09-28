@@ -1,0 +1,17 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Backend install and syntax check
+        run: |
+          cd backend && npm install
+          for f in $(find src -name '*.js'); do node --check "$f"; done
+      - name: Frontend build
+        run: cd frontend && npm install && npm run build
+      - name: Analyzer compile check
+        run: python3 -m py_compile analyzer/fap_analyze.py
